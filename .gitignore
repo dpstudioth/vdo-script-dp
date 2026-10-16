@@ -1,0 +1,4 @@
+.env
+vdo-script-output/
+__pycache__/
+*.pyc
