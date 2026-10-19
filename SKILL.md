@@ -1,8 +1,8 @@
 ---
 name: vdo-script
-description: "VDO Script DP Studio: แกะสคริปต์วิดีโอจากลิงก์หรือไฟล์ (YouTube, TikTok, Instagram, Facebook, Meta Ad Library, ไฟล์ mp4) ออกมาเป็นตาราง Shot List ทีละช็อต มี Sequence/Time, Shot Size, Angle, Camera Movement, Description, Voiceover/Dialogue, Text on Screen, Music/SFX พร้อมสรุป Hook และโครงเรื่อง ส่งออกเป็น Markdown, Excel (มีภาพตัวอย่างทุกช็อต) และ CSV ใช้เมื่อผู้ใช้แปะลิงก์วิดีโอแล้วขอ แกะสคริปต์ ถอดสคริปต์ ถอดช็อต ทำ shot list, script breakdown, storyboard จากวิดีโอ, reverse-engineer โฆษณา หรือวิเคราะห์แอดคู่แข่ง"
+description: "VDO Script DP Studio: แกะสคริปต์วิดีโอจากลิงก์หรือไฟล์ (YouTube, TikTok, Instagram, Facebook, Meta Ad Library, ไฟล์ mp4) ออกมาเป็นตาราง Shot List ทีละช็อต มี Sequence/Time, Shot Size, Angle, Camera Movement, Description, Voiceover/Dialogue, Text on Screen, Music/SFX พร้อมสรุป Hook และโครงเรื่อง ส่งออกเป็นหน้าเว็บ, Word, Excel (มีภาพตัวอย่างทุกช็อต), Markdown และ CSV แปลบรีฟเป็นไทยแบบลื่นหู และดัดแปลงบทให้เป็นของ DP Studio หรือแบรนด์อื่นโดยนับคำให้ใกล้ต้นฉบับ ใช้เมื่อผู้ใช้แปะลิงก์วิดีโอแล้วขอ แกะสคริปต์ ถอดสคริปต์ ถอดช็อต ทำ shot list, script breakdown, storyboard จากวิดีโอ, reverse-engineer โฆษณา หรือวิเคราะห์แอดคู่แข่ง, ทำสคริปต์แอดเวอร์ชันเราจากแอดอ้างอิง"
 argument-hint: "<ลิงก์วิดีโอ หรือ path ไฟล์> [หมายเหตุเพิ่มเติม]"
-allowed-tools: Bash, Read, Write
+allowed-tools: Bash, Read, Write, Edit
 user-invocable: true
 ---
 
@@ -27,6 +27,7 @@ python3 "$SKILL_DIR/scripts/setup_check.py"
 - `can_proceed: false` → บอกผู้ใช้ว่าขาดอะไร พร้อมคำสั่งติดตั้งจาก README.md (ffmpeg, yt-dlp, `pip_command`) แล้วหยุดรอ
 - `elevenlabs_key: false` → ทำต่อได้ แต่บอกผู้ใช้ว่าจะถอดเสียงได้เฉพาะวิดีโอที่มีซับในตัว ถ้าอยากได้เสียงพูดครบและแม่นยำ ให้ใส่ `ELEVENLABS_API_KEY=...` ในไฟล์ `.env` ข้าง SKILL.md
 - `meta_ad_library_support: false` และลิงก์เป็น Meta Ad Library → บอกให้ติดตั้ง Playwright ตาม README
+- `thai_wordcount: false` หรือ `word_export: false` → ทำต่อได้ แต่แนะนำให้รัน `optional_pip_command` (ไม่มี pythainlp จะนับคำไทยแบบประมาณ ไม่มี python-docx จะไม่ได้ไฟล์ Word)
 
 ## 2. ดึงวิดีโอ แบ่งช็อต และถอดเสียง
 
@@ -54,12 +55,12 @@ python3 "$SKILL_DIR/scripts/extract.py" "<ลิงก์หรือไฟล�
 - **movement**: Static, Pan, Tilt, Push in, Pull out, Tracking, Handheld, Zoom, Orbit, Gimbal, Whip pan
 - **description**: บรรยายภาพเป็นภาษาไทย สั้น กระชับ ใครทำอะไร ที่ไหน สินค้าหรือองค์ประกอบสำคัญคืออะไร ถ้าเป็นภาพกราฟิก/AI/Screen record ให้ระบุ
 - **vo**: ใช้ `vo_auto` เป็นฐาน แก้คำที่ถอดผิดชัดเจนให้ถูก แบ่งผู้พูดถ้ามีหลายคน ห้ามแต่งบทพูดเพิ่มจากที่ไม่ได้ยิน คำที่ฟังไม่ชัดให้ใส่ `[ไม่ชัด]` ช่วงไม่มีเสียงพูดให้ใส่ `-`
-- **vo_th**: ใส่เฉพาะเมื่อวิดีโอไม่ใช่ภาษาไทย (แปลไทยสั้นๆ ของบทพูด)
+- **vo_th**: ใส่เฉพาะเมื่อวิดีโอไม่ใช่ภาษาไทย แปลตามความหมายให้ลื่นหูแบบคนไทยพูด ห้ามแปลทีละคำ (ดูตัวอย่างใน `references/adaptation-guide.md`)
 - **text_on_screen**: คัดลอกตัวหนังสือบนจอตามที่เห็นจริง รวมซับไตเติลที่ฝังในวิดีโอ ราคา โลโก้ ปุ่ม CTA ไม่มีให้ใส่ `-`
 - **audio**: เพลง เสียงประกอบ (SFX) จังหวะเพลงเปลี่ยน ถ้าประเมินจากภาพไม่ได้ให้เว้นว่าง อย่าเดา
 - **notes**: เทคนิคที่น่าสนใจ เช่น Jump cut, Match cut, Speed ramp, Split screen, Transition
 
-## 4. เขียน analysis.json แล้วสร้างตาราง
+## 4. เขียน analysis.json
 
 เขียนไฟล์ `<work_dir>/analysis.json` ด้วย Write tool ตามรูปแบบนี้ (ต้องมีครบทุกช็อตตาม `n` ใน shots.json):
 
@@ -73,6 +74,7 @@ python3 "$SKILL_DIR/scripts/extract.py" "<ลิงก์หรือไฟล�
     "cta": "คำเรียกให้ทำอะไร",
     "takeaways": "3 ข้อที่เอาไปใช้กับงานของเราได้"
   },
+  "ad_copy": {"en": "แคปชันแอดต้นฉบับ (จาก shots.json > meta.ad_text)", "th": "แปลไทยลื่นหู", "cta": "ปุ่ม CTA ต้นฉบับ"},
   "shots": [
     {"n": 1, "shot": "MCU", "angle": "Eye level", "movement": "Static",
      "description": "...", "vo": "...", "vo_th": "", "text_on_screen": "...", "audio": "...", "notes": ""}
@@ -80,19 +82,41 @@ python3 "$SKILL_DIR/scripts/extract.py" "<ลิงก์หรือไฟล�
 }
 ```
 
-จากนั้นรัน:
+- `ad_copy` ใส่เมื่อมีแคปชันแอด (ลิงก์ Meta Ad Library จะมี `meta.ad_text` ให้) ถ้าแคปชันไม่ใช่ภาษาไทยต้องมี `th` เสมอ ส่วน `cta` ดูจากปุ่มในภาพหรือแคปชัน ถ้าไม่รู้ให้เว้นไว้
+
+## 4.1 ดัดแปลงบทเป็นของเรา (ทำเมื่อผู้ใช้ขอ)
+
+ทำเมื่อผู้ใช้ขอ "ดัดแปลง / ปรับให้เข้ากับ DP Studio หรือแบรนด์ X / ทำเวอร์ชันเรา / ทำสคริปต์แอดของเราจากตัวนี้" ถ้าไม่ระบุแบรนด์ใช้ DP Studio
+
+1. อ่าน `references/adaptation-guide.md` และ `references/dp-studio.md` (ถ้าเป็นแบรนด์อื่น ถามข้อมูลแบรนด์ที่จำเป็นจากผู้ใช้: ขายอะไร กลุ่มเป้าหมาย CTA)
+2. เพิ่มใน analysis.json:
+   - ทุกช็อต: `adapt_visual` (ภาพที่เราจะถ่ายหรือทำ), `adapt_vo` (บทพูดของเรา ไม่มีเสียงพูดใส่ `-`), `adapt_text` (ตัวหนังสือบนจอ)
+   - `ad_copy.adapt` (แคปชันของเรา) และ `ad_copy.cta_adapt` (ปุ่ม CTA)
+   - `adapt`: `{"brand": "DP Studio", "title": "ชื่อสคริปต์ของเรา", "lede": "อธิบาย 1 ถึง 2 ประโยค", "sections": [{"heading": "ปรับให้เข้ากับตลาดไทย", "items": ["..."]}, {"heading": "เวอร์ชันทดสอบ", "items": ["..."]}, {"heading": "ถ่ายทำ", "items": ["..."]}]}`
+3. นับคำ แล้วแก้จนผ่าน:
+   ```bash
+   python3 "$SKILL_DIR/scripts/wordcount.py" "<work_dir>"
+   ```
+   `shots_off` ต้องว่าง (ทุกช็อตห่างจากต้นฉบับไม่เกิน 2 คำ) และ `total_adapt` ห่างจาก `total_source` ไม่เกิน 5% ถ้าไม่ผ่านให้แก้ `adapt_vo` ด้วย Edit แล้วรันใหม่ ห้ามยัดคำไร้ความหมายเพื่อให้ครบ ให้เพิ่มรายละเอียดที่ช่วยขายแทน
+
+## 4.2 สร้างไฟล์ทั้งหมด
 
 ```bash
 python3 "$SKILL_DIR/scripts/build_sheet.py" "<work_dir>"
 ```
 
-ได้ไฟล์ `script.md`, `script.xlsx` (มีภาพตัวอย่างทุกช็อต พร้อมแท็บ Summary) และ `script.csv` (นำเข้า Google Sheets ได้)
+ได้ไฟล์:
+- `script.html` หน้าเว็บตารางเทียบช็อตต่อช็อต มีภาพทุกช็อต ปุ่มสลับมุมมอง ปุ่มคัดลอกตารางไปวางใน Google Docs และปุ่มคัดลอกบทพูด
+- `script.docx` ไฟล์ Word แนวนอนมีภาพทุกช็อต (อัปขึ้น Google Drive แล้วเปิดด้วย Google เอกสารได้)
+- `script.xlsx` (มีภาพทุกช็อต + แท็บ Summary), `script.md`, `script.csv`
+
+ถ้ามีเครื่องมือ Artifact ให้เผยแพร่ `script.html` เป็นหน้าเว็บ (ใส่ `icon` เป็น `script`) แล้วให้ลิงก์ผู้ใช้ พร้อมบอกว่าเป็นหน้าเว็บส่วนตัว ต้องกดแชร์ก่อนส่งให้คนอื่น ถ้าไม่มีให้บอก path ของ `script.html` เปิดในเบราว์เซอร์ได้เลย
 
 ## 5. ตอบผู้ใช้
 
-1. สรุปสั้น: ความยาว จำนวนช็อต ความยาวเฉลี่ยต่อช็อต Hook โครงเรื่อง และ 3 ข้อที่เอาไปใช้ต่อได้
-2. แสดงตาราง Shot List ในแชท (คอลัมน์ # / Time / Shot / Angle / Description / Voiceover / Text on Screen) ถ้าเกิน 30 ช็อต แสดง 15 ช็อตแรกแล้วบอกว่าตารางเต็มอยู่ในไฟล์
-3. บอก path ของไฟล์ Excel, Markdown และ CSV เป็นลิงก์ที่กดได้
+1. สรุปสั้น: ความยาว จำนวนช็อต ความยาวเฉลี่ยต่อช็อต จำนวนคำ Hook โครงเรื่อง และ 3 ข้อที่เอาไปใช้ต่อได้ (ถ้าดัดแปลงบท บอกจำนวนคำต้นฉบับเทียบบทเรา และสิ่งที่ปรับให้เข้าตลาดไทย)
+2. แสดงตาราง Shot List ในแชท (คอลัมน์ # / Time / Shot / Angle / Description / Voiceover / Text on Screen) ถ้าดัดแปลงบท ให้แสดง # / เวลา / ภาพของเรา / บทพูดของเรา แทน ถ้าเกิน 30 ช็อต แสดง 15 ช็อตแรกแล้วบอกว่าตารางเต็มอยู่ในไฟล์
+3. ให้ลิงก์หน้าเว็บ และบอก path ของไฟล์ Word, Excel, Markdown และ CSV เป็นลิงก์ที่กดได้ พร้อมบอกวิธีเอาเข้า Google Docs (กดปุ่ม "คัดลอกตารางไป Docs" แล้ววาง หรืออัปไฟล์ Word ขึ้น Drive)
 4. ถ้าการแบ่งช็อตดูผิด (ช็อตยาวผิดปกติ หรือแตกถี่เกินจริง) ให้บอกผู้ใช้และเสนอรันใหม่ด้วยค่า `--threshold` อื่น
 
 ## ข้อควรระวัง

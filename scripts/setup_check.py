@@ -13,10 +13,17 @@ for m in ('requests', 'openpyxl', 'PIL'):
         importlib.import_module(m)
     except ImportError:
         missing_py.append('pillow' if m == 'PIL' else m)
-try:
-    importlib.import_module('playwright'); playwright = True
-except ImportError:
-    playwright = False
+
+
+def has(m):
+    try:
+        importlib.import_module(m); return True
+    except ImportError:
+        return False
+
+
+playwright = has('playwright')
+optional = [pkg for mod, pkg in (('pythainlp', 'pythainlp'), ('docx', 'python-docx')) if not has(mod)]
 
 key = bool(os.environ.get('ELEVENLABS_API_KEY'))
 for p in (os.path.join(SKILL_DIR, '.env'), os.path.expanduser('~/.config/elevenlabs/.env')):
@@ -30,5 +37,8 @@ print(json.dumps({
     'pip_command': ('%s -m pip install %s' % (os.path.basename(sys.executable), ' '.join(missing_py))) if missing_py else '',
     'elevenlabs_key': key,
     'meta_ad_library_support': playwright,
+    'thai_wordcount': 'pythainlp' not in optional,
+    'word_export': 'python-docx' not in optional,
+    'optional_pip_command': ('%s -m pip install %s' % (os.path.basename(sys.executable), ' '.join(optional))) if optional else '',
     'python': sys.executable,
 }, ensure_ascii=False, indent=1))

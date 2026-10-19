@@ -5,7 +5,15 @@ Skill สำหรับ **Claude Code** ที่แกะสคริปต์
 | Sequence / Time | Shot Size | Angle | Camera Movement | Description | Voiceover / Dialogue | Text on Screen | Music / SFX | Notes |
 |---|---|---|---|---|---|---|---|---|
 
-พร้อมสรุป Hook โครงเรื่อง สไตล์การตัดต่อ และสิ่งที่เอาไปใช้ต่อได้ ส่งออกเป็น 3 ไฟล์
+พร้อมสรุป Hook โครงเรื่อง สไตล์การตัดต่อ และสิ่งที่เอาไปใช้ต่อได้
+
+**ทำได้เพิ่ม**
+- แกะแคปชันแอด (บรีฟ) แล้วแปลไทยแบบลื่นหู ไม่แปลทีละคำ
+- ดัดแปลงบทเป็นของ DP Studio หรือแบรนด์อื่น ช็อตต่อช็อต พร้อมนับคำให้ใกล้ต้นฉบับ (ห่างไม่เกิน 2 คำต่อช็อต) จะได้พูดทันจังหวะเดิม
+
+ส่งออกเป็น 5 ไฟล์
+- `script.html` หน้าเว็บตารางเทียบต้นฉบับกับบทของเรา มีภาพทุกช็อต ปุ่มคัดลอกตารางไปวางใน Google Docs
+- `script.docx` ไฟล์ Word มีภาพทุกช็อต อัปขึ้น Google Drive แล้วเปิดด้วย Google เอกสารได้
 - `script.xlsx` Excel มีภาพตัวอย่างของทุกช็อต
 - `script.md` ตารางสำหรับอ่านหรือวางใน Notion / Obsidian
 - `script.csv` นำเข้า Google Sheets ได้ ภาษาไทยไม่เพี้ยน
@@ -23,6 +31,12 @@ Skill สำหรับ **Claude Code** ที่แกะสคริปต์
 ```
 
 หรือพิมพ์ธรรมดาก็ได้ เช่น "แกะสคริปต์คลิปนี้ให้หน่อย https://youtu.be/xxxx"
+
+อยากได้เวอร์ชันของเรา พิมพ์ต่อท้ายได้เลย เช่น
+
+```
+/vdo-script https://www.facebook.com/ads/library/?id=xxx ช่วยแกะสคริปต์นี้ให้เข้ากับ DP Studio
+```
 
 ไฟล์ผลลัพธ์จะอยู่ในโฟลเดอร์ `vdo-script-output/` ของโปรเจกต์ที่เปิดอยู่
 
@@ -47,7 +61,7 @@ brew install python yt-dlp ffmpeg
 ปิดแล้วเปิด Terminal ใหม่ จากนั้นติดตั้งไลบรารี Python
 
 ```bash
-python -m pip install requests openpyxl pillow
+python -m pip install requests openpyxl pillow pythainlp python-docx
 ```
 
 ถ้าต้องการแกะวิดีโอจาก **Meta Ad Library** ด้วย ให้ติดตั้งเพิ่ม
@@ -99,8 +113,12 @@ vdo-script/
   SKILL.md                    คำสั่งการทำงานของ Claude
   scripts/extract.py          ดาวน์โหลด แบ่งช็อต ดึงภาพ ถอดเสียง
   scripts/build_sheet.py      สร้างตาราง Excel / Markdown / CSV
+  scripts/wordcount.py        นับคำต้นฉบับเทียบบทดัดแปลง
   scripts/setup_check.py      เช็คความพร้อมของเครื่อง
+  assets/page.html            เทมเพลตหน้าเว็บ
   references/shot-glossary.md คำศัพท์ช็อตและมุมกล้อง
+  references/adaptation-guide.md หลักการแปลและดัดแปลงบท
+  references/dp-studio.md     ข้อมูลแบรนด์ DP Studio
 ```
 
 ## ข้อควรรู้
